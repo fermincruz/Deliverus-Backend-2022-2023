@@ -24,55 +24,7 @@ const upload = multer({ storage }).fields([
 
 module.exports = (options) => {
   const app = options.app
-  const middlewares = options.middlewares
 
-  app.route('/restaurants')
-    .get(
-      RestaurantController.index)
-    .post(
-      middlewares.isLoggedIn,
-      middlewares.hasRole('owner'),
-      upload,
-      RestaurantValidation.create,
-      middlewares.handleValidation,
-      RestaurantController.create)
+  // TODO: Include routes for restaurant described in the lab session wiki page.
 
-  app.route('/restaurants/:restaurantId')
-    .get(RestaurantController.show)
-    .put(
-      middlewares.isLoggedIn,
-      middlewares.hasRole('owner'),
-      middlewares.checkEntityExists(Restaurant, 'restaurantId'),
-      middlewares.checkRestaurantOwnership,
-      upload,
-      RestaurantValidation.update,
-      middlewares.handleValidation,
-      RestaurantController.update)
-    .delete(
-      middlewares.isLoggedIn,
-      middlewares.hasRole('owner'),
-      middlewares.checkEntityExists(Restaurant, 'restaurantId'),
-      middlewares.checkRestaurantOwnership,
-      RestaurantController.destroy)
-
-  app.route('/restaurants/:restaurantId/orders')
-    .get(
-      middlewares.isLoggedIn,
-      middlewares.hasRole('owner'),
-      middlewares.checkEntityExists(Restaurant, 'restaurantId'),
-      middlewares.checkRestaurantOwnership,
-      OrderController.indexRestaurant)
-
-  app.route('/restaurants/:restaurantId/products')
-    .get(
-      middlewares.checkEntityExists(Restaurant, 'restaurantId'),
-      ProductController.indexRestaurant)
-
-  app.route('/restaurants/:restaurantId/analytics')
-    .get(
-      middlewares.isLoggedIn,
-      middlewares.hasRole('owner'),
-      middlewares.checkEntityExists(Restaurant, 'restaurantId'),
-      middlewares.checkRestaurantOwnership,
-      OrderController.analytics)
 }

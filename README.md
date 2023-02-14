@@ -1,138 +1,23 @@
-# DeliverUS - Project Requirements
+# Introduction
+We will learn how to define and implement the Endpoints of our backend and how endpoints are handled by Controllers (from the MVC pattern). Controllers run some parts of the business logic of our application.
 
-## Introduction
-DeliverUS is a made-up company whose business is focused on delivering food from 3rd parties (restaurants) to customers. To this end, we are requested to develop the needed software products which hopefully will boost the company. After interviewing the product owners and some stakeholders, the general objectives and requirements have been agreed, as described in this document.
-
-## General Objective: Manage customer orders to restaurants
-The software has to enable customers to order products to restaurants. To this end the following objectives have been identified
-
-* Objective 1: Restaurants management
-* Objective 2: Restaurants' products management
-* Objective 3: Restaurants' order management
-* Objective 4: Customers' order management
-* Objective 5: Users management
-
-## Information requirements
-### IR-1: Users
-DeliverUS expects two types of users: restaurant owners and customers. The following information should be stored: First name, last name, email, phone number, avatar image, address and postal code. For login and authentication purposes, a password, a token and a tokenExpiration date should also be stored.
-
-### IR-2: Restaurants
-Owners manage restaurants. The following information should be stored: name, description, address, postal code, url, email, phone number, logo, hero image (it will serve as restaurant background image), shipping costs (default for orders placed to this restaurant), average service time in minutes (which will be computed from the orders record), status. A restaurant status represent if it is accepting orders, currently unavailable, or temporarily/permanently closed.
-There are some predefined restaurant categories on the system, so the restaurant will belong to one restaurant category.
-
-### IR-3: Products
-Products are sold by restaurants. Each product belongs to one restaurant. The following information should be stored: name, description, price, image, order and availability. The order is intended for sorting purposes that could be defined by the owner so the products are ordered according to his/her interests.
-
-There are some predefined product categories on the system, so the product will belong to one product category.
-
-### IR-4: Orders
-Orders are placed by customers. Each order will include a set of products from one particular restaurant. Orders cannot include products from more than one restaurant. The following information should be stored: creation date (when the customer places the order), start date (when a restaurant accepts the order), sent date (when the order leaves the restaurant) and delivery date (when the customer receives the order), total price of the products included, the address where it has to be delivered, and the shipping costs. Thus, each order can be in one of the following states/statuses: 'pending', 'in process', 'sent', 'delivered'.
-
-The system has to store the quantity of each product included in the order and the unitary price of each product at the moment of order placement.
-
-## Class diagram proposed for design
-From the information requirements and objectives described, the following class diagram is proposed:
-
-![DeliverUS-EntityDiagram drawio (3)](https://user-images.githubusercontent.com/19324988/155700850-bb7817fb-8818-440b-97cb-4fbd33787f20.png)
-
-## Business rules
-* BR1: If an order total price is greater than 10€ the shipping costs will be 0€ (free shipping).
-* BR2: An order can only include products from one restaurant
-* BR3: Once an order is placed, it cannot be modified.
-
-## Functional requirements
-### Customer functional requirements:
-As a customer, the system has to provide the following functionalities:
-#### FR1: Restaurants listing
-Customers will be able to query all restaurants.
-#### FR2: Restaurants details and menu
-Customers will be able to query restaurants details and the products offered by them.
-#### FR3: Add, edit and remove products to a new order
-A customer can add several products, and several units of a product to a new order. Before confirming, customer can edit and remove products.
-#### FR4: Confirm or dismiss new order
-If an order is confirmed, it is created with the state _pending_. Shipping costs must follow BR1: _Orders greater than 10€ don't have service fee_. An order is automatically related to the customer who created it.
-If an order is dismissed, nothing is created.
-#### FR5: Listing my confirmed orders
-A Customer will be able to check his/her confirmed orders, sorted from the most recent to the oldest.
-#### FR6: Show order details
-A customer will be able to look his/her orders up. The system should provide all details of an order, including the ordered products and their prices.
-#### FR7: Show top 3 products
-Customers will be able to query top 3 products from all restaurants. Top products are the most popular ones, in other words the best sellers.
-#### FR8: Edit/delete order
-If the order is in the state 'pending', the customer can edit or remove the products included or remove the whole order. The delivery address can also be modified in the state 'pending'.
-
-If the order is in the state 'sent' or 'delivered' no edition is allowed.
+Secondly, we will learn how an ORM software tool (the _Sequelize_ package) will help us performing operations on the Maria Database from these controllers.
+## Prerequisites
+* Keep in mind we are developing the backend software needed for DeliverUS project. Please, read project requirements found at: https://github.com/IISSI2-IS/DeliverUS-Backend/blob/main/README.md
+* Software requirements for the developing environment con be found at: https://github.com/IISSI2-IS/DeliverUS-Backend#readme
+  * The template project includes EsLint configuration so it should auto-fix formatting problems as soon as a file is saved.
+  * The template project also includes the complete model of the App, which was completed in the previous lab.
 
 
-### Owner functional requirements:
-As a restaurant owner, the system has to provide the following functionalities:
-#### FR1: Add, list, edit and remove Restaurants
-Restaurants are related to an owner, so owners can perform these operations to the restaurants owned by him. If an owner creates a Restaurant, it will be automatically related (owned) to him. If a restaurant is removed, all its products must be removed as well.
-#### FR2: Add, list, edit and remove Products
-An owner can create, read, update and delete the products related to any of his owned Restaurants.
-#### FR3: List orders of a Restaurant.
-An owner will be able to inspect orders of any of the restaurants owned by him. The order should include products related.
-#### FR4: To change the state of an order
-An owner can change the state of an order. States can change from: _pending_ to _in process_, from _in process_ to _sent_, and finally from _sent_ to _delivered_.
-#### FR5: To Show a dashboard including some business analytics:
- #yesterdayOrders, #pendingOrders, #todaysServedOrders, #invoicedToday (€)
+# Exercices
 
-
-## Non-functional requirements
-### Portability
-The system has to provide users the possibility to be accessed and run through the most popular operating systems for mobile and desktop devices.
-
-### Security
-Backend should include basic measures to prevent general security holes to be exploited such as: sql injection, contentSecurityPolicy, crossOriginEmbedderPolicy, crossOriginOpenerPolicy, crossOriginResourcePolicy, dnsPrefetchControl, expectCt, frameguard, hidePoweredBy, helmet.hsts, ieNoOpen, noSniff, originAgentCluster, permittedCrossDomainPolicies, referrerPolicy, xssFilter.
-
-For login and authentication purposes, a password, a token and a tokenExpiration (token authentication strategy) date should also be stored for users.
-
-Note: This subject does not focus on security topics, but we will use libraries made by cybersecurity experts that will help us to include these measures. In Node.js ecosystem, Sequelize includes data sanitization and other measures to prevent SQL injection attacks and we will use the helmet package for the rest of potential security holes when publishing REST services.
-
-### Scalability
-The system should use a stack of technologies that could be deployed in more than one machine, horizontal scalability ready.
-
-## Proposed architecture
-Once that requirements have been analyzed by our company's software architects, the following general architecture is proposed:
-1. Client-server architecture model.
-2. Front-end and backend independent developments.
-3. One front-end development for each type of user (Customer and Owners).
-
-Moreover, these architects propose the following technological stack:
-1. Backend:
-   1. Relational database, Mariadb server. It may be deployed on a machine other than where the rest of subsystems are deployed.
-   2. DeliverUS backend application logic developed in Node.js application server that publishes functionalities as RESTful services helped by Express.js framework.
-2. Front-end:
-   1. React-native based clients for both front-ends, deployable as Android, iOS or web Apps.
-   1. DeliverUS-Owner App for the functionalities intended for restaurants' owners.
-   3. DeliverUS-Customer App for the functionalities intended for customers.
-
-
-
-# IISSI-2 Software Engineering grade group project:
-Students will group together to develop the course project. The size and complexity of the project to be developed is intended for groups from 3 to 4 students.
-
-During lab sessions, teachers will conduct and instruct students about the development of the backend and frontend of the DeliverUS App requirements related to owner functionalities. Specifically:
-* Lab 1, 2 and 3: Backend required developments to support owner frontend app and some common functionalities.
-* Lab 4, 5, 6, 7 and 8: Frontend app for owners.
-
-Students will be provided with:
-* A backend template that includes the implementation of labs 1, 2 and 3
-* A frontend implementation of the DeliverUS app for owners.
-* A frontend template for the DeliverUS app for customers.
-
-Students are required to:
-* Complete the backend template provided to include the required functionalities for customers.
-* Complete the frontend template provided to develop the customer frontend App.
-
-# Backend deployment steps:
-1. Accept the assignment of your github classroom if you have not done it before. Once you accepted it, you will have your own copy of this project template.
-2. Clone your private repository at your local development environment by opening VScode and clone it by opening Command Palette (Ctrl+Shift+P or F1) and `Git clone` this repository, or using the terminal and running
+## 1. Use repository as template and clone
+Press on "Use this template" to create your own repository based on this template. Afterwards clone your own repository by opening VScode and clone the base lab repository by opening Command Palette (Ctrl+Shift+P or F1) and `Git clone` this repository, or using the terminal and running
 ```PowerShell
 git clone <url>
 ```
 
-It may be necessary to setup your github username by running the following commands on your terminal:
+It may be necessary to setup your git username by running the following commands on your terminal:
 ```PowerShell
 git config --global user.name "FIRST_NAME LAST_NAME"
 git config --global user.email "MY_NAME@example.com"
@@ -140,17 +25,182 @@ git config --global user.email "MY_NAME@example.com"
 
 In case you are asked if you trust the author, please select yes.
 
-3. Setup your environment file. As explained in labs, it is needed to create a copy of the `.env.example` file, name it `.env` and include your environment variables, specially your database username and password.
+As in previous labs, it is needed to create a copy of the `.env.example` file, name it `.env` and include your environment variables.
 
-4. Install dependencies. Run `npm install` to download and install packages to the current project folder.
+Run `npm install` to download and install packages to the current project folder.
 
-5. Check and run mariaDB server.
-* Windows:
-  * If installed as service run `services.msc` and start the mariadb service
-  * If installed as binary, locate your mariaDB binary and start.
-* MacOS:
-```Powershell
-mysql.server start
+## 2. Remember project structure
+
+You will find the following elements (some of them will appear in following labs). During this lab we will focus our attention on the `routes` and `controllers` folders
+* **`routes` folder: where URIs are defined and referenced to middlewares and controllers**
+* **`controllers` folder: where business logic is implemented, including operations to the database**
+* `package.json`: scripts for running the server and packages dependencies including express, sequelize and others. This file is usally created with `npm init`, but you can find it already in your cloned project.
+    * In order to add more package dependencies you have to run `npm install packageName --save` or `npm install packageName --save-dev` for dependencies needed only for development environment (p. e. nodemon). To learn more about npm please refer to [its documentation](https://docs.npmjs.com/cli/v7/commands/npm).
+* `package-lock.json`: install exactly the same dependencies in futures deployments. Notice that dependencies versions may change, so this file guarantees to download and deploy the exact same tree of dependencies.
+* `backend.js`: run http server, setup connections to Mariadb and it will initialize various components
+* `.env.example`: example environment variables.
+* `models` folder: where models entities are defined
+* `migrations` folder: where the database schema is defined
+* `seeders` folder: where database sample data is defined
+* `middlewares` folder: various checks needed such as authorization, permissions and ownership.
+* `controllers\validation` folder: validation of data included in client requests. One validation file for each entity
+* `config` folder: where some global config files are stored (to run migrations and seeders from cli)
+* `example_api_client` folder: will store test requests to our Rest API
+* `.vscode` folder: VSCode config for this project
+
+
+## 3. Routes
+Backend software can publish its functionalities through RESTFul services. These services follows the architectural patterns of the HTTP protocol. DeliverUS functionalities are explained at https://github.com/IISSI2-IS/DeliverUS-Backend/blob/main/README.md#functional-requirements
+
+As an example, if the system provides CRUD operations over an entity, there should be an endpoint for each operation. HTTP POST endpoint to Create, HTTP GET to Read, HTTP PUT|PATCH to Update and HTTP DELETE to Delete.
+
+Routes are usually created following some common patterns and good practices. For instance, for the CRUD operations on the Restaurant entity:
+* `HTTP POST /restaurants` to **C**reate a restaurant. The controller method typically is named as `create`
+* `HTTP GET /restaurants` to **R**ead all restaurants. The controller method typically is named as `index`
+* `HTTP GET /restaurants/{restaurantId}` to **R**ead details of the restaurant with id=restaurantId (a path param). The controller method typically is named as `show`
+* `HTTP PUT /restaurants/{restaurantId}` to **U**pdate details of the restaurant with id=restaurantId (a path param). The controller method typically is named as `update`
+* `HTTP DELETE /restaurants/{restaurantId}` to Delete the restaurant with id=restaurantId (a path param). The controller method typically is named as `destroy`
+
+Moreover, and endpoint may define some query params. These are usually intended to include some optional parameters in the request, such as implementing a search over the entity. For instance, if we want to query the orders filtered by status, a `status` query param should be defined.
+
+### 3.1. Restaurant routes definition
+In order to define routes in an _Express Node.js_ application, we have to follow the following template:
+```Javascript
+app.route('/path') //the endpoint path
+    .get( //the http verb that we want to be available at the previous path
+      EntityController.index) // the function that will attend requests for that http verb and that path
+    .post( //we can chain more http verbs for the same endpoint
+      EntityController.create) // the function that will attend requests for that http verb and that path
+````
+
+DeliverUS project organizes its routes in the `routes` folder. We define routes for each entity in its own file. For instance, restaurant routes will be defined in the `RestaurantRoutes.js` file.
+
+Complete the file `RestaurantRoutes.js` in order to define the endpoints for the following functional requirements:
+* Customer functional requirements:
+  * FR1: Restaurants listing: Customers will be able to query all restaurants.
+  * FR2: Restaurants details and menu: Customers will be able to query restaurants details and the products offered by them.
+
+* Owner functional requirements:
+  * FR1: To Create, Read, Update and Delete (CRUD) Restaurants: Restaurantes are related to an owner, so owners can perform these operations to the restaurants owned by him. If an owner creates a Restaurant, it will be automatically related (owned) to him.
+  * FR3: List orders of a Restaurant. An owner will be able to inspect orders of any of the restaurants owned by him. The order should include products related.
+  * FR5: To Show a dashboard including some business analytics: #yesterdayOrders, #pendingOrders, #todaysServedOrders, #invoicedToday (€). Notice that the controller function that attends this request is `OrderController.analytics`)
+
+
+
+### 3.2. Updating our Express app.
+Notice that `backend.js` now includes a way of register routes by importing all routes definition files in the `routes` folder by the following sentences:
+```Javascript
+// require only admits one parameter, so we need to create an object composed of both parameters needed on routes
+const requireOptions = { app: app }
+require('./routes/')(requireOptions)
 ```
-6. Run migrations and seeders. You can use the previously configured task by opening the command palette Command Palette (Ctrl+Shift+P or F1) `Tasks: run task` and select `Rebuild database`
-7. Run `npm start`
+When the require method receives a folder path (instead of a file) it looks for an `index.js` file. If present, this file usually requires (imports) all the files of the folder. In this case, this means all the routes files of the folder.
+
+## 4. Controllers.
+Controllers are the main components of the business logic layer. Functionalities and business rules may be implemented on controllers specially according to the MVC architectural pattern. DeliverUS project organizes its controllers in the `controllers` folder. We define controllers for the business logic related to each entity in its own file. For instance, restaurant controller will be defined in the `RestaurantController.js` file.
+
+Each controller method receives a request `req` and a response `res` object. Request object _represents the HTTP request and has properties for the request query string, parameters, body, HTTP headers, and so on_ (see https://expressjs.com/en/4x/api.html#req for more details).
+In our project we will need the following attributes from the request:
+* `req.body` represents the data that comes from the client (usually a Json document or the a form sent as multipart/form-data when files are needed).
+* `req.params` represents path params. For instance if we defined a `:restaurantId` param, we will have access to it by `req.params.restaurantId`.
+* `req.file` or `req.files` represents files appended to a multipart/form-data request. For instance, `req.files.logo` would give access to a file param named `logo`.
+* `req.query` represents query params. For instance, if a request includes a `status` query param, it will be accessed by `req.query.status`.
+* `req.user` represents the logged in user that made the request. We will learn more about this in lab3.
+
+ Response object _represents the HTTP response that an Express app sends when it gets an HTTP request_ (see https://expressjs.com/en/4x/api.html#res.
+In our project we will need the following methods from the `res` object:
+* `res.json(entityObject)` returns the object `entityObject` to the client as a json document with the HTTP 200 status code. For instance: `res.json(restaurant)` will return the restaurant object as json document.
+* `res.status(500).send(err)` returns the `err` object (typically including some kind of error message) and a HTTP 500 status code to the client.
+
+HTTP Code status used in this project are:
+* `200`. Requests attended successfully.
+* `401`. Wrong credentials.
+* `403`. Request forbidden (not enough privileges).
+* `404`. Requested resource was not found.
+* `422`. Validation error.
+* `500`. General error.
+
+For more information about HTTP Status code see: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+
+### 4.1. Restaurant controller methods.
+#### 4.1.1 Create method to Create entity
+Typically, we expect that the body of the req includes a json document with all the needed information to create a new element of the entity. To access this document we use the `req.body` attribute.
+
+Sequelize offers a way of creating new elements, the `Model.build` method that receives a json object that includes the needed fields for buliding a new element and then a `Model.save` method to store it in the corresponding database table.
+
+For the RestaurantController we can do this by using the following snippets:
+```Javascript
+const newRestaurant = Restaurant.build(req.body)
+```
+Then, we have to include the logged in owner as the restaurant userId. Notice that until next lab, the system does not implement authentication, so the following line will NOT be included during this lab, so the restaurant will not be related to any owner. We will fix this next lab.
+```Javascript
+ // newRestaurant.userId = req.user.id // authenticated user
+```
+Next, we have to check if files are present. When we create a restaurant, we may include a heroImage and a logoImage. To this end we will check if each file is present, and if so, we store the path of the file in the corresponding database table field.
+```Javascript
+if (typeof req.files?.heroImage !== 'undefined') {
+  newRestaurant.heroImage = req.files.heroImage[0].path
+}
+if (typeof req.files?.logo !== 'undefined') {
+  newRestaurant.logo = req.files.logo[0].path
+}
+```
+
+Finally, we can save the new created restaurant. Our `newRestaurant` variable is built, but not saved. To this end, sequelize offers a `save` method for each model. As this is an I/O operation, we don't want to block the system, so the save method returns a promise. We will use the await/async syntax to make our code more readable. We can use the following snippet:
+```Javascript
+try {
+      const restaurant = await newRestaurant.save()
+      res.json(restaurant)
+    }
+catch (err) {
+    if (err.name.includes('ValidationError')) { //The database may return some kind of error.
+        res.status(422).send(err)
+    } else {
+        res.status(500).send(err)
+    }
+}
+```
+
+#### 4.1.2 Index methods to Read entity.
+Implement the FR1: Restaurants listing: Customers will be able to query all restaurants. To this end, you can use the Sequelize `Model.findAll` method.
+
+Implement the FR3: List orders of a Restaurant. An owner will be able to inspect orders of any of the restaurants owned by him. The order should include products related. To this end, you can use the Sequelize `Model.findAll` method including a where clause.
+
+#### 4.1.3 Show methods to return entity details.
+Implement the FR2: Restaurants details and menu: Customers will be able to query restaurants details and the products offered by them.
+To this end, you will receive a `req.params.restaurantId` identifying the restaurant. You can use the Sequelize `Model.findByPk` method.
+Notice that you will need to include its products. Follow this syntax:
+```Javascript
+const restaurant = await Restaurant.findByPk(req.params.restaurantId,
+      {
+        include: [
+          {
+            model: Product,
+            as: 'products'
+          }
+       ]
+      })
+```
+
+Next, return the restaurant by using `res.json()` method. Surround this code with the corresponding try and catch (you may not find a restaurant with the received id). In this case return a HTTP 404 status code.
+
+#### 4.1.4 Update method to modify entity.
+As done for the creation, check if files are present. Then use the `Model.update` method. This method returns the number of rows modified. In case of success, you should return the updated restaurant element by querying the database (`findByPk`) after the success update.
+This function follows the same steps that when creating a restaurant.
+
+
+#### 4.1.5 Destroy method to remove entity.
+Use the `Model.destroy` method. You need to specify a where clause to remove only the `req.params.restaurantId` restaurant. Destroy returns the number of destroyed elements. Return an info message.
+
+
+## 5. Test Restaurant routes and controllers
+Open ThunderClient extension (https://www.thunderclient.io/), and reload the collections by clicking on Collections → _**≡**_ menu→ reload. Collections are stored at
+
+Click on Collections folder and you will find a set of requests with tests for all endpoints. Run all the collection, you will find at the right side if a test is successful or not. Some requests perform more than one test.
+
+
+# References
+* Node.js docs: https://nodejs.org/en/docs/
+* Express docs: https://expressjs.com/
+* Sequelize docs: https://sequelize.org/master/manual/getting-started.html
+* ThunderClient: https://www.thunderclient.io/
