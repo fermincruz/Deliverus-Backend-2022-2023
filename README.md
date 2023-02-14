@@ -2,26 +2,29 @@
 We will learn how to run a basic _Node.js_ HTTP server and setup our project structure using the _Express_ framework.
 Secondly, we will understand how to create the Model of our project (from the MVC pattern) and learn how the _Sequelize_ package will help us creating the relational database schema and perform operations on the Maria Database.
 ## Prerequisites
-* Keep in mind we are developing the backend software needed for DeliverUS project. Please, read project requirements found at: https://github.com/IISSI2-IS/DeliverUS-Backend/blob/main/README.md
-* Software requirements for the developing environment con be found at: https://github.eii.us.es/IISSI2-IS/IISSI2-IS-Backend/wiki
+* Keep in mind we are developing the backend software needed for DeliverUS project. Please, read project requirements found at:  https://github.com/IISSI2-IS/DeliverUS-Backend-2022-2023/blob/main/README.md
   * The template project includes EsLint configuration so it should auto-fix formatting problems as soon as a file is saved.
 
 
 # Exercices
 
-## 1. Use repository as template and clone
-Press on "Use this template" to create your own repository based on this template. Afterwards clone your own repository by opening VScode and clone the base lab repository by opening Command Palette (Ctrl+Shift+P or F1) and `Git clone` this repository, or using the terminal and running
+## 1. Accept GitHub Classroom assignment and clone
+Accept the GitHub Classroom assignment to create your own repository based on this template (most likely you have already done it if you are reading these instructions.). Afterwards, clone your own repository by opening VScode and clone the base lab repository by opening Command Palette (Ctrl+Shift+P or F1) and `Git clone` this repository, or using the terminal and running
 ```PowerShell
 git clone <url>
 ```
 
-It may be necessary to setup your git username by running the following commands on your terminal:
+Alternatively, you can use the *Source Control* button in the left-sided bar and click on *Clone Repository* button. 
+
+In case you are asked if you trust the author, please select yes.
+
+It may be necessary to setup your git username by running the following commands on your terminal, in order to be able to commit and push:
 ```PowerShell
 git config --global user.name "FIRST_NAME LAST_NAME"
 git config --global user.email "MY_NAME@example.com"
 ```
 
-In case you are asked if you trust the author, please select yes.
+
 
 ## 2. Inspect project structure
 
@@ -32,11 +35,12 @@ You will find the following elements (some of them will appear in following labs
 * `backend.js`: run http server, setup connections to Mariadb and it will initialize various components
 * `.env.example`: example environment variables.
 * `models` folder: where models entities are defined
-* `migrations` folder: where the database schema is defined
-* `seeders` folder: where database sample data is defined
+* `database` folder: where all the logic for creating and populating the database is located
+    * `database/migrations` folder: where the database schema is defined
+    * `database/seeders` folder: where database sample data is defined
 * `routes` folder: where URIs are defined and referenced to middlewares and controllers
 * `controllers` folder: where business logic is implemented, including operations to the database
-* `controllers\validation` folder: validation of data included in client requests. One validation file for each entity
+    * `controllers/validation` folder: validation of data included in client requests. One validation file for each entity
 * `middlewares` folder: various checks needed such as authorization, permissions and ownership.
 * `config` folder: where some global config files are stored (to run migrations and seeders from cli)
 * `example_api_client` folder: will store test requests to our Rest API
@@ -47,7 +51,7 @@ You will find the following elements (some of them will appear in following labs
 ### 3.1. Environment values
 We need an environment file including the credentials of our database. To this end make a copy of `.env.example` and name the new file as `.env` at the project root folder.
 Replace the database connection values in order to match your database credentials.
-It is important to notice that the file `.env` contains credentials to access your database so it **must not be pushed to your repository**.
+It is important to notice that the file `.env` contains credentials to access your database so it **must not be pushed to your repository** (as specified in .gitignore).
 
 NOTE: you need a database user and a database schema named `deliverus`. Check Lab0 and IISSI1 for more information.
 
@@ -67,7 +71,9 @@ const { Sequelize } = require('sequelize')
 const app = express()
 app.use(express.json())
 app.use(cors())
-app.use(helmet())
+app.use(helmet({ 
+  crossOriginResourcePolicy: false // to allow image loading from public folder
+}))
 ```
 
 * Setup database connection
@@ -100,7 +106,7 @@ sequelize.authenticate()
   })
 ```
 
-* Run backend.js by opening a Terminal (Ctrl+Shift+\`) and executing `npm install` (if not previously executed) and `nodemon backend.js` and check terminal log. When using nodemon, each time you change and save some file of your project, it will stop and run it again, so it is very suitable for developing purposes.
+* Run backend.js by opening a Terminal (Ctrl+Shift+\`) and executing `npm install` (if not previously executed) and `npm start` and check terminal log. This command will launch `nodemon backend.js`, as defined in `package.json`; when using nodemon, each time you change and save some file of your project, it will stop and run it again, so it is very suitable for developing purposes.
 
 You should read something like:
 ```PowerShell
@@ -110,12 +116,10 @@ INFO - Database connected.
 Deliverus listening at http://localhost:3000
 ```
 
-* Alternatively you can run your project by using `npm start`.
-
-* Alternatively you can run and debug your project by using the Run and Debug tool of VSCode. It can be found on the left menu or by typing `shift+ctrl+D`. Add a breakpoint at lines 32 and 35 of backend.js to debug this file. Inspect `server` and `error` variables respectively.
+* Alternatively you can run and debug your project by using the *Run and Debug* tool of VSCode. It can be found on the left-sided bar or by typing `shift+ctrl+D`, and selecting `Run Script: start` in the drop down list. Add a breakpoint at lines 33 and 36 of backend.js, and click on the play icon in the *Run and Debug* tool to debug this file. Inspect `server` and `error` variables respectively.
 
 ## 4. Migrations
-Keep in mind the requirements described at: https://github.eii.us.es/IISSI2-IS/DeliverUS-ProjectRequirements/wiki/DeliverUS---Project-Requirements
+Keep in mind the requirements described at: https://github.com/IISSI2-IS/DeliverUS-Backend-2022-2023/blob/main/README.md
 
 And this is the Entity diagram proposed:
 
@@ -132,7 +136,7 @@ For our purposes, the `up` method will include the creation of each table and it
 You will find migrations' files completed for all entities but Restaurant.
 
 ### 4.1. Complete Create Restaurant migration
-Please complete the code of the file `migrations\create_restaurant.js` in order to include the Resturant entity properties (name them as it is shown in the Entity Diagram, specifically: name, description, address, postalCode, url, restaurantCategoryId, shippingCosts, email, logo, phone, createdAt, updatedAt, userId, status). Check Sequelize documentation for [Migrations Skeleton](https://sequelize.org/master/manual/migrations.html#migration-skeleton) and [DataTypes](https://sequelize.org/v5/manual/data-types.html).
+Please complete the code of the file `migrations\create_restaurant.js` in order to include the Resturant entity properties (**it is mandatory to name them as it is shown in the Entity Diagram**, specifically: name, description, address, postalCode, url, restaurantCategoryId, shippingCosts, email, logo, phone, createdAt, updatedAt, userId, status). Check Sequelize documentation for [Migrations Skeleton](https://sequelize.org/master/manual/migrations.html#migration-skeleton) and [DataTypes](https://sequelize.org/v5/manual/data-types.html); alternatively, you can check the Product migration for examples.
 
 Keep in mind that relationships are implemented by using foreign keys. Check Restaurant relationships and define foreign key properties and how are referencing related tables. For instance, a Restaurant is related to RestarantCategory, so you may have to define the following foreign key:
 ```Javascript
@@ -149,7 +153,7 @@ restaurantCategoryId: {
 ```
 
 Once you have completed the Restaurant table migration, you should run migrations. To this end, a Command Line Interface (CLI) binary is available (named `sequelize-cli`). It uses the database connection details found at `config\config.js`.
-Next, you must run migrations by executing them using npx (tool for running npm packages binaries) on the terminal:
+To run migrations, execute them using npx (tool for running npm packages binaries) on the terminal:
 ```PowerShell
 npx sequelize-cli db:migrate
 ```
@@ -159,6 +163,7 @@ To undo migrations you can execute:
 ```PowerShell
 npx sequelize-cli db:migrate:undo:all
 ```
+
 More information about migrations can be found at: https://sequelize.org/master/manual/migrations.html
 
 ## 5. Seeders
@@ -173,7 +178,12 @@ And you can undo them by running:
 ```PowerShell
 npx sequelize-cli db:seed:undo:all
 ```
+
 More information about seeders can be found at: https://sequelize.org/master/manual/migrations.html#creating-the-first-seed
+
+---
+If you make any changes to migrations or seeders, you can update the database by running the undo migrations, run migrations, and run seeders commands all at once using the `Rebuild database` task. To run this task, execute the `Run Task` command and select `Rebuild database`. You can see the command definition associated with this task in the `.vscode/tasks.json` file.
+
 
 ## 6. Models
 Object Relational Mapping (ORM) is a software programming technique to bind business logic objects to data sources, so programmers can directly work with high-level objects in order to perform database operations seamlessly. Usually, objects that are related to database entities are called _Models_ and we work with them in order to interact with their corresponding database entities for standard CRUD (create, read, update and delete) operations. When using ORM tools you are provided with the following operations: create, findAll, update and destroy (among others).
@@ -212,12 +222,14 @@ async getAverageServiceTime () {
 ````
 
 ## 7. Test migrations, seeders and Restaurant model
-In order to make a minimal test, we have included the following code at _backend.js_
+In order to make a minimal test, we have included the following code at `controllers/RestaurantController.js` and `routes/RestaurantRoutes.js` (we will address the details of implementing routes and controllers in the next lab):
 ```Javascript
+// RestaurantController.js
 const models = require('../models')
 const Restaurant = models.Restaurant
+const RestaurantCategory = models.RestaurantCategory
 
-const indexRestaurants = async function (req, res) {
+const index = async function (req, res) {
   try {
     const restaurants = await Restaurant.findAll(
       {
@@ -235,11 +247,26 @@ const indexRestaurants = async function (req, res) {
     res.status(500).send(err)
   }
 }
-
-app.route('/restaurants').get(indexRestaurants)
-
 ```
-Notice that the `indexRestaurants` function performs a query to the model in order to retrieve all restaurants from the database, ordered by RestaurantCategory, and returns them as a JSON document. Next we define the endpoint `/restaurants` that answers to requests using the `indexRestaurants` function. We will learn more about routing and controllers next labs.
+
+```Javascript
+// RestaurantRoutes.js
+const RestaurantController = require('../controllers/RestaurantController')
+
+module.exports = (options) => {
+  const app = options.app
+
+  app.route('/restaurants').get(RestaurantController.index)
+}
+```
+
+Notice that the `indexRestaurants` function performs a query to the model in order to retrieve all restaurants from the database, ordered by RestaurantCategory, and returns them as a JSON document. Next we define the endpoint `/restaurants` that answers to requests using the `indexRestaurants` function. 
+
+In order to load all the routes defined in `routes` folder, we have included this code in `backend.js`:
+```Javascript
+const requireOptions = { app }
+require('./routes/')(requireOptions)
+```
 
 Open ThunderClient extension (https://www.thunderclient.io/), and reload the collections by clicking on Collections → _**≡**_ menu→ reload. Collections are stored at `example_api_client
 
