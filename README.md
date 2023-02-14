@@ -1,138 +1,21 @@
-# DeliverUS - Project Requirements
-
-## Introduction
-DeliverUS is a made-up company whose business is focused on delivering food from 3rd parties (restaurants) to customers. To this end, we are requested to develop the needed software products which hopefully will boost the company. After interviewing the product owners and some stakeholders, the general objectives and requirements have been agreed, as described in this document.
-
-## General Objective: Manage customer orders to restaurants
-The software has to enable customers to order products to restaurants. To this end the following objectives have been identified
-
-* Objective 1: Restaurants management
-* Objective 2: Restaurants' products management
-* Objective 3: Restaurants' order management
-* Objective 4: Customers' order management
-* Objective 5: Users management
-
-## Information requirements
-### IR-1: Users
-DeliverUS expects two types of users: restaurant owners and customers. The following information should be stored: First name, last name, email, phone number, avatar image, address and postal code. For login and authentication purposes, a password, a token and a tokenExpiration date should also be stored.
-
-### IR-2: Restaurants
-Owners manage restaurants. The following information should be stored: name, description, address, postal code, url, email, phone number, logo, hero image (it will serve as restaurant background image), shipping costs (default for orders placed to this restaurant), average service time in minutes (which will be computed from the orders record), status. A restaurant status represent if it is accepting orders, currently unavailable, or temporarily/permanently closed.
-There are some predefined restaurant categories on the system, so the restaurant will belong to one restaurant category.
-
-### IR-3: Products
-Products are sold by restaurants. Each product belongs to one restaurant. The following information should be stored: name, description, price, image, order and availability. The order is intended for sorting purposes that could be defined by the owner so the products are ordered according to his/her interests.
-
-There are some predefined product categories on the system, so the product will belong to one product category.
-
-### IR-4: Orders
-Orders are placed by customers. Each order will include a set of products from one particular restaurant. Orders cannot include products from more than one restaurant. The following information should be stored: creation date (when the customer places the order), start date (when a restaurant accepts the order), sent date (when the order leaves the restaurant) and delivery date (when the customer receives the order), total price of the products included, the address where it has to be delivered, and the shipping costs. Thus, each order can be in one of the following states/statuses: 'pending', 'in process', 'sent', 'delivered'.
-
-The system has to store the quantity of each product included in the order and the unitary price of each product at the moment of order placement.
-
-## Class diagram proposed for design
-From the information requirements and objectives described, the following class diagram is proposed:
-
-![DeliverUS-EntityDiagram drawio (3)](https://user-images.githubusercontent.com/19324988/155700850-bb7817fb-8818-440b-97cb-4fbd33787f20.png)
-
-## Business rules
-* BR1: If an order total price is greater than 10€ the shipping costs will be 0€ (free shipping).
-* BR2: An order can only include products from one restaurant
-* BR3: Once an order is placed, it cannot be modified.
-
-## Functional requirements
-### Customer functional requirements:
-As a customer, the system has to provide the following functionalities:
-#### FR1: Restaurants listing
-Customers will be able to query all restaurants.
-#### FR2: Restaurants details and menu
-Customers will be able to query restaurants details and the products offered by them.
-#### FR3: Add, edit and remove products to a new order
-A customer can add several products, and several units of a product to a new order. Before confirming, customer can edit and remove products.
-#### FR4: Confirm or dismiss new order
-If an order is confirmed, it is created with the state _pending_. Shipping costs must follow BR1: _Orders greater than 10€ don't have service fee_. An order is automatically related to the customer who created it.
-If an order is dismissed, nothing is created.
-#### FR5: Listing my confirmed orders
-A Customer will be able to check his/her confirmed orders, sorted from the most recent to the oldest.
-#### FR6: Show order details
-A customer will be able to look his/her orders up. The system should provide all details of an order, including the ordered products and their prices.
-#### FR7: Show top 3 products
-Customers will be able to query top 3 products from all restaurants. Top products are the most popular ones, in other words the best sellers.
-#### FR8: Edit/delete order
-If the order is in the state 'pending', the customer can edit or remove the products included or remove the whole order. The delivery address can also be modified in the state 'pending'.
-
-If the order is in the state 'sent' or 'delivered' no edition is allowed.
+# Introduction
+We will learn how to run a basic _Node.js_ HTTP server and setup our project structure using the _Express_ framework.
+Secondly, we will understand how to create the Model of our project (from the MVC pattern) and learn how the _Sequelize_ package will help us creating the relational database schema and perform operations on the Maria Database.
+## Prerequisites
+* Keep in mind we are developing the backend software needed for DeliverUS project. Please, read project requirements found at: https://github.com/IISSI2-IS/DeliverUS-Backend/blob/main/README.md
+* Software requirements for the developing environment con be found at: https://github.eii.us.es/IISSI2-IS/IISSI2-IS-Backend/wiki
+  * The template project includes EsLint configuration so it should auto-fix formatting problems as soon as a file is saved.
 
 
-### Owner functional requirements:
-As a restaurant owner, the system has to provide the following functionalities:
-#### FR1: Add, list, edit and remove Restaurants
-Restaurants are related to an owner, so owners can perform these operations to the restaurants owned by him. If an owner creates a Restaurant, it will be automatically related (owned) to him. If a restaurant is removed, all its products must be removed as well.
-#### FR2: Add, list, edit and remove Products
-An owner can create, read, update and delete the products related to any of his owned Restaurants.
-#### FR3: List orders of a Restaurant.
-An owner will be able to inspect orders of any of the restaurants owned by him. The order should include products related.
-#### FR4: To change the state of an order
-An owner can change the state of an order. States can change from: _pending_ to _in process_, from _in process_ to _sent_, and finally from _sent_ to _delivered_.
-#### FR5: To Show a dashboard including some business analytics:
- #yesterdayOrders, #pendingOrders, #todaysServedOrders, #invoicedToday (€)
+# Exercices
 
-
-## Non-functional requirements
-### Portability
-The system has to provide users the possibility to be accessed and run through the most popular operating systems for mobile and desktop devices.
-
-### Security
-Backend should include basic measures to prevent general security holes to be exploited such as: sql injection, contentSecurityPolicy, crossOriginEmbedderPolicy, crossOriginOpenerPolicy, crossOriginResourcePolicy, dnsPrefetchControl, expectCt, frameguard, hidePoweredBy, helmet.hsts, ieNoOpen, noSniff, originAgentCluster, permittedCrossDomainPolicies, referrerPolicy, xssFilter.
-
-For login and authentication purposes, a password, a token and a tokenExpiration (token authentication strategy) date should also be stored for users.
-
-Note: This subject does not focus on security topics, but we will use libraries made by cybersecurity experts that will help us to include these measures. In Node.js ecosystem, Sequelize includes data sanitization and other measures to prevent SQL injection attacks and we will use the helmet package for the rest of potential security holes when publishing REST services.
-
-### Scalability
-The system should use a stack of technologies that could be deployed in more than one machine, horizontal scalability ready.
-
-## Proposed architecture
-Once that requirements have been analyzed by our company's software architects, the following general architecture is proposed:
-1. Client-server architecture model.
-2. Front-end and backend independent developments.
-3. One front-end development for each type of user (Customer and Owners).
-
-Moreover, these architects propose the following technological stack:
-1. Backend:
-   1. Relational database, Mariadb server. It may be deployed on a machine other than where the rest of subsystems are deployed.
-   2. DeliverUS backend application logic developed in Node.js application server that publishes functionalities as RESTful services helped by Express.js framework.
-2. Front-end:
-   1. React-native based clients for both front-ends, deployable as Android, iOS or web Apps.
-   1. DeliverUS-Owner App for the functionalities intended for restaurants' owners.
-   3. DeliverUS-Customer App for the functionalities intended for customers.
-
-
-
-# IISSI-2 Software Engineering grade group project:
-Students will group together to develop the course project. The size and complexity of the project to be developed is intended for groups from 3 to 4 students.
-
-During lab sessions, teachers will conduct and instruct students about the development of the backend and frontend of the DeliverUS App requirements related to owner functionalities. Specifically:
-* Lab 1, 2 and 3: Backend required developments to support owner frontend app and some common functionalities.
-* Lab 4, 5, 6, 7 and 8: Frontend app for owners.
-
-Students will be provided with:
-* A backend template that includes the implementation of labs 1, 2 and 3
-* A frontend implementation of the DeliverUS app for owners.
-* A frontend template for the DeliverUS app for customers.
-
-Students are required to:
-* Complete the backend template provided to include the required functionalities for customers.
-* Complete the frontend template provided to develop the customer frontend App.
-
-# Backend deployment steps:
-1. Accept the assignment of your github classroom if you have not done it before. Once you accepted it, you will have your own copy of this project template.
-2. Clone your private repository at your local development environment by opening VScode and clone it by opening Command Palette (Ctrl+Shift+P or F1) and `Git clone` this repository, or using the terminal and running
+## 1. Use repository as template and clone
+Press on "Use this template" to create your own repository based on this template. Afterwards clone your own repository by opening VScode and clone the base lab repository by opening Command Palette (Ctrl+Shift+P or F1) and `Git clone` this repository, or using the terminal and running
 ```PowerShell
 git clone <url>
 ```
 
-It may be necessary to setup your github username by running the following commands on your terminal:
+It may be necessary to setup your git username by running the following commands on your terminal:
 ```PowerShell
 git config --global user.name "FIRST_NAME LAST_NAME"
 git config --global user.email "MY_NAME@example.com"
@@ -140,17 +23,234 @@ git config --global user.email "MY_NAME@example.com"
 
 In case you are asked if you trust the author, please select yes.
 
-3. Setup your environment file. As explained in labs, it is needed to create a copy of the `.env.example` file, name it `.env` and include your environment variables, specially your database username and password.
+## 2. Inspect project structure
 
-4. Install dependencies. Run `npm install` to download and install packages to the current project folder.
+You will find the following elements (some of them will appear in following labs):
+* `package.json`: scripts for running the server and packages dependencies including express, sequelize and others. This file is usally created with `npm init`, but you can find it already in your cloned project.
+    * In order to add more package dependencies you have to run `npm install packageName --save` or `npm install packageName --save-dev` for dependencies needed only for development environment (p. e. nodemon). To learn more about npm please refer to [its documentation](https://docs.npmjs.com/cli/v7/commands/npm).
+* `package-lock.json`: install exactly the same dependencies in futures deployments. Notice that dependencies versions may change, so this file guarantees to download and deploy the exact same tree of dependencies.
+* `backend.js`: run http server, setup connections to Mariadb and it will initialize various components
+* `.env.example`: example environment variables.
+* `models` folder: where models entities are defined
+* `migrations` folder: where the database schema is defined
+* `seeders` folder: where database sample data is defined
+* `routes` folder: where URIs are defined and referenced to middlewares and controllers
+* `controllers` folder: where business logic is implemented, including operations to the database
+* `controllers\validation` folder: validation of data included in client requests. One validation file for each entity
+* `middlewares` folder: various checks needed such as authorization, permissions and ownership.
+* `config` folder: where some global config files are stored (to run migrations and seeders from cli)
+* `example_api_client` folder: will store test requests to our Rest API
+* `.vscode` folder: VSCode config for this project
 
-5. Check and run mariaDB server.
-* Windows:
-  * If installed as service run `services.msc` and start the mariadb service
-  * If installed as binary, locate your mariaDB binary and start.
-* MacOS:
-```Powershell
-mysql.server start
+
+## 3. Inspect and run backend.js
+### 3.1. Environment values
+We need an environment file including the credentials of our database. To this end make a copy of `.env.example` and name the new file as `.env` at the project root folder.
+Replace the database connection values in order to match your database credentials.
+It is important to notice that the file `.env` contains credentials to access your database so it **must not be pushed to your repository**.
+
+NOTE: you need a database user and a database schema named `deliverus`. Check Lab0 and IISSI1 for more information.
+
+### 3.2. Run HTTP server and connect to database
+We will run our first version of the backend server. First we can inspect the operations that are needed:
+* Importing modules:
+```JavaScript
+const express = require('express')
+const cors = require('cors')
+const dotenv = require('dotenv')
+dotenv.config()
+const helmet = require('helmet')
+const { Sequelize } = require('sequelize')
 ```
-6. Run migrations and seeders. You can use the previously configured task by opening the command palette Command Palette (Ctrl+Shift+P or F1) `Tasks: run task` and select `Rebuild database`
-7. Run `npm start`
+* Setup Express.js application and some middlewares for parsing requests as JSON Objects,  enabling [Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) (cors) or security ([helmet](https://helmetjs.github.io/))
+```JavaScript
+const app = express()
+app.use(express.json())
+app.use(cors())
+app.use(helmet())
+```
+
+* Setup database connection
+```JavaScript
+const databaseHost = process.env.DATABASE_HOST
+const databasePort = process.env.DATABASE_PORT
+const databaseUsername = process.env.DATABASE_USERNAME
+const databasePassword = process.env.DATABASE_PASSWORD
+const databaseName = process.env.DATABASE_NAME
+
+const sequelize = new Sequelize(databaseName, databaseUsername, databasePassword, {
+  host: databaseHost,
+  port: databasePort,
+  dialect: 'mariadb'
+})
+```
+* Connect to database and if success start the Express application (http server)
+```JavaScript
+sequelize.authenticate()
+  .then(() => {
+    console.info('INFO - Database connected.')
+    const port = process.env.APP_PORT
+    return app.listen(port)
+  })
+  .then((server) => {
+    console.log('Deliverus listening at http://localhost:' + server.address().port)
+  })
+  .catch(err => {
+    console.error('ERROR - Unable to connect to the database:', err)
+  })
+```
+
+* Run backend.js by opening a Terminal (Ctrl+Shift+\`) and executing `npm install` (if not previously executed) and `nodemon backend.js` and check terminal log. When using nodemon, each time you change and save some file of your project, it will stop and run it again, so it is very suitable for developing purposes.
+
+You should read something like:
+```PowerShell
+[nodemon] starting `node backend.js`
+Executing (default): SELECT 1+1 AS result
+INFO - Database connected.
+Deliverus listening at http://localhost:3000
+```
+
+* Alternatively you can run your project by using `npm start`.
+
+* Alternatively you can run and debug your project by using the Run and Debug tool of VSCode. It can be found on the left menu or by typing `shift+ctrl+D`. Add a breakpoint at lines 32 and 35 of backend.js to debug this file. Inspect `server` and `error` variables respectively.
+
+## 4. Migrations
+Keep in mind the requirements described at: https://github.eii.us.es/IISSI2-IS/DeliverUS-ProjectRequirements/wiki/DeliverUS---Project-Requirements
+
+And this is the Entity diagram proposed:
+
+***
+
+![alt text](https://user-images.githubusercontent.com/19324988/155347424-c2c87a8e-00f4-400e-8024-eca40a776c6a.png)
+
+***
+
+Migrations are a powerfull tool to keep your database schema and statuses tracked. During this subject, we will use them to create our database schema. Notice that you can find one migration for each entity: User, Restaurant, Product, Order (and ProductCategory + RestaurantCategory).
+Each migration has two methods: `up` and `down`, that dictate how to perform the migration and undo it.
+For our purposes, the `up` method will include the creation of each table and its fields, defining PrimaryKey and ForeignKeys.
+
+You will find migrations' files completed for all entities but Restaurant.
+
+### 4.1. Complete Create Restaurant migration
+Please complete the code of the file `migrations\create_restaurant.js` in order to include the Resturant entity properties (name them as it is shown in the Entity Diagram, specifically: name, description, address, postalCode, url, restaurantCategoryId, shippingCosts, email, logo, phone, createdAt, updatedAt, userId, status). Check Sequelize documentation for [Migrations Skeleton](https://sequelize.org/master/manual/migrations.html#migration-skeleton) and [DataTypes](https://sequelize.org/v5/manual/data-types.html).
+
+Keep in mind that relationships are implemented by using foreign keys. Check Restaurant relationships and define foreign key properties and how are referencing related tables. For instance, a Restaurant is related to RestarantCategory, so you may have to define the following foreign key:
+```Javascript
+restaurantCategoryId: {
+  type: Sequelize.INTEGER,
+  references: {
+    model: {
+      tableName: 'RestaurantCategories'
+    },
+    key: 'id'
+  }
+}
+
+```
+
+Once you have completed the Restaurant table migration, you should run migrations. To this end, a Command Line Interface (CLI) binary is available (named `sequelize-cli`). It uses the database connection details found at `config\config.js`.
+Next, you must run migrations by executing them using npx (tool for running npm packages binaries) on the terminal:
+```PowerShell
+npx sequelize-cli db:migrate
+```
+After doing this, you should find created tables in your mariadb.
+
+To undo migrations you can execute:
+```PowerShell
+npx sequelize-cli db:migrate:undo:all
+```
+More information about migrations can be found at: https://sequelize.org/master/manual/migrations.html
+
+## 5. Seeders
+Seed files are used to populate database tables with sample or test data. You can find them in the `seeders` folder. Notice that `restaurants_seeder.js` presumes a given naming for restaurants table fields.
+
+You can run your seeders to populate the database by running:
+```PowerShell
+npx sequelize-cli db:seed:all
+```
+
+And you can undo them by running:
+```PowerShell
+npx sequelize-cli db:seed:undo:all
+```
+More information about seeders can be found at: https://sequelize.org/master/manual/migrations.html#creating-the-first-seed
+
+## 6. Models
+Object Relational Mapping (ORM) is a software programming technique to bind business logic objects to data sources, so programmers can directly work with high-level objects in order to perform database operations seamlessly. Usually, objects that are related to database entities are called _Models_ and we work with them in order to interact with their corresponding database entities for standard CRUD (create, read, update and delete) operations. When using ORM tools you are provided with the following operations: create, findAll, update and destroy (among others).
+
+Sequelize is a Node.js Object Relational Mapping tool that provides all the necessary tools for establishing connections to the database (as explained in [exercise 3.2](https://github.eii.us.es/IISSI2-IS/Lab1-Backend-Model/wiki#32-run-http-server-and-connect-to-database)), running migrations and seeders ([exercise 4](https://github.eii.us.es/IISSI2-IS/Lab1-Backend-Model/wiki#4-migrations) and [exercise 5](https://github.eii.us.es/IISSI2-IS/Lab1-Backend-Model/wiki#5-seeders)), defining models and perform operations.
+
+You can find Models definitions for all entities at `models` folder. Each model is a class named after its corresponding table (but in singular) and extends the Model class from Sequelize.
+
+### 6.1. Complete Restaurant model
+Please complete the code of the file `models\restaurant.js` in order to include all the properties that match the corresponding fields of the Restaurants table.
+
+Notice that we have also defined the relationships between Models. For instance, Restaurant model is related to RestaurantCategory, User, Product and Order. In order to define these relationships, we have to include the following method:
+
+```Javascript
+ static associate (models) {
+      // define association here
+      Restaurant.belongsTo(models.RestaurantCategory, { foreignKey: 'restaurantCategoryId', as: 'restaurantCategory' })
+      Restaurant.belongsTo(models.User, { foreignKey: 'userId', as: 'user' })
+      Restaurant.hasMany(models.Product, { foreignKey: 'restaurantId', as: 'products' })
+      Restaurant.hasMany(models.Order, { foreignKey: 'restaurantId', as: 'orders' })
+    }
+```
+On the other side of the relationship, you have to include the oposite relation For instance, you can find that a Product _belongsTo_ a Restaurant, or that a RestaurantCategory _hasMany_ Restaurant.
+
+Finally, you can define methods that perform computations over the model. For instance, in the Restaurant model, you can find a method that computes and returns the average service time of a restaurant.
+```Javascript
+async getAverageServiceTime () {
+      try {
+        const orders = await this.getOrders()
+        const serviceTimes = orders.filter(o => o.deliveredAt).map(o => moment(o.deliveredAt).diff(moment(o.createdAt), 'minutes'))
+        return serviceTimes.reduce((acc, serviceTime) => acc + serviceTime, 0) / serviceTimes.length
+      } catch (err) {
+        return err
+      }
+    }
+````
+
+## 7. Test migrations, seeders and Restaurant model
+In order to make a minimal test, we have included the following code at _backend.js_
+```Javascript
+const models = require('../models')
+const Restaurant = models.Restaurant
+
+const indexRestaurants = async function (req, res) {
+  try {
+    const restaurants = await Restaurant.findAll(
+      {
+        attributes: ['id', 'name', 'description', 'address', 'postalCode', 'url', 'shippingCosts', 'averageServiceMinutes', 'email', 'phone', 'logo', 'heroImage', 'status', 'restaurantCategoryId'],
+        include:
+      {
+        model: RestaurantCategory,
+        as: 'restaurantCategory'
+      },
+        order: [[{ model: RestaurantCategory, as: 'restaurantCategory' }, 'name', 'ASC']]
+      }
+    )
+    res.json(restaurants)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
+app.route('/restaurants').get(indexRestaurants)
+
+```
+Notice that the `indexRestaurants` function performs a query to the model in order to retrieve all restaurants from the database, ordered by RestaurantCategory, and returns them as a JSON document. Next we define the endpoint `/restaurants` that answers to requests using the `indexRestaurants` function. We will learn more about routing and controllers next labs.
+
+Open ThunderClient extension (https://www.thunderclient.io/), and reload the collections by clicking on Collections → _**≡**_ menu→ reload. Collections are stored at `example_api_client
+
+Click on Restaurants folder and you will find a simple GET ALL request. Run the request, it should return a _200 OK HTTP Status Code_ and a JSON with the Restaurants information.
+
+
+# References
+* Node.js docs: https://nodejs.org/en/docs/
+* Express docs: https://expressjs.com/
+* Sequelize docs: https://sequelize.org/master/manual/getting-started.html
+* Cors: https://github.com/expressjs/cors
+* Helmet: https://helmetjs.github.io/
+* ThunderClient: https://www.thunderclient.io/
+* JSON spec: https://www.json.org/json-en.html; (en español: https://www.json.org/json-es.html)

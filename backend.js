@@ -13,13 +13,6 @@ app.use(helmet({ // seguridad general en servicios REST
 
 app.use('/public', express.static(path.join(__dirname, '/public')))// Serves resources from public folder
 
-// require only admits one parameter, so we need to create an object composed of both parameters needed on routes
-const requireOptions = { app }
-require('./routes/')(requireOptions)
-
-const { initPassport } = require('./config/passport')
-initPassport()
-
 const { initSequelize } = require('./config/sequelize')
 const sequelize = initSequelize()
 
@@ -35,3 +28,31 @@ sequelize.authenticate()
   .catch(err => {
     console.error('ERROR - Unable to connect to the database:', err)
   })
+
+
+// The following belongs to controllers and routes folder. It is included here just for lab1 testig purposes
+// Routing and controllers will be explained on the following labs.
+const models = require('./models')
+const Restaurant = models.Restaurant
+const RestaurantCategory = models.RestaurantCategory
+
+const indexRestaurants = async function (req, res) {
+  try {
+    const restaurants = await Restaurant.findAll(
+      {
+        attributes: ['id', 'name', 'description', 'address', 'postalCode', 'url', 'shippingCosts', 'averageServiceMinutes', 'email', 'phone', 'logo', 'heroImage', 'status', 'restaurantCategoryId'],
+        include:
+              {
+                model: RestaurantCategory,
+                as: 'restaurantCategory'
+              },
+        order: [[{ model: RestaurantCategory, as: 'restaurantCategory' }, 'name', 'ASC']]
+      }
+    )
+    res.json(restaurants)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+}
+
+app.route('/restaurants').get(indexRestaurants)

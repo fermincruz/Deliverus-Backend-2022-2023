@@ -30,44 +30,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Restaurant.init({
-    name: DataTypes.STRING,
-    description: DataTypes.TEXT,
-    address: DataTypes.STRING,
-    postalCode: DataTypes.STRING,
-    url: DataTypes.STRING,
-    shippingCosts: DataTypes.DOUBLE,
-    averageServiceMinutes: DataTypes.DOUBLE,
-    email: DataTypes.STRING,
-    phone: DataTypes.STRING,
-    logo: DataTypes.STRING,
-    heroImage: DataTypes.STRING,
-    status: {
-      type: DataTypes.ENUM,
-      values: [
-        'online',
-        'offline',
-        'closed',
-        'temporarily closed'
-      ]
-    },
-    restaurantCategoryId: {
-      allowNull: false,
-      type: DataTypes.INTEGER
-    },
-    userId: {
-      allowNull: false,
-      type: DataTypes.INTEGER
-    },
-    createdAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: new Date()
-    },
-    updatedAt: {
-      allowNull: false,
-      type: DataTypes.DATE,
-      defaultValue: new Date()
-    }
+  //TODO: Include the rest of the properties of the Restaurant model
+
   }, {
     sequelize,
     modelName: 'Restaurant'
